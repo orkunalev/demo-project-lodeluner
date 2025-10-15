@@ -16,25 +16,28 @@ import org.openqa.selenium.safari.SafariDriver;
 import java.net.URL;
 
 public class Driver {
-    static String browser;
 
     private Driver() {
+        // Singleton pattern: dışarıdan new Driver() kullanılamaz
     }
 
     private static WebDriver driver;
+    private static String browser;
 
     public static WebDriver getDriver() {
         if (driver == null) {
+
+            // Browser tercihi alınır: sistem property veya config dosyası
             if (System.getProperty("BROWSER") == null) {
                 browser = ConfigurationReader.getProperty("browser");
             } else {
                 browser = System.getProperty("BROWSER");
             }
             System.out.println("Browser: " + browser);
+
             switch (browser) {
                 case "remote-chrome":
                     try {
-                        // assign your grid server address
                         String gridAddress = "52.90.101.17";
                         URL url = new URL("http://" + gridAddress + ":4444/wd/hub");
                         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
@@ -44,10 +47,9 @@ public class Driver {
                         e.printStackTrace();
                     }
                     break;
-                case "remote-firefox":
 
+                case "remote-firefox":
                     try {
-                        // assign your grid server address
                         String gridAddress = "52.90.101.17";
                         URL url = new URL("http://" + gridAddress + ":4444/wd/hub");
                         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
@@ -57,18 +59,27 @@ public class Driver {
                         e.printStackTrace();
                     }
                     break;
+
                 case "chrome":
-                    WebDriverManager.chromedriver().setup();
+                    WebDriverManager.chromedriver()
+                            .driverVersion("LATEST")  // Burayı ekleyerek en güncel ChromeDriver'ı indir
+                            .setup();
                     driver = new ChromeDriver();
                     break;
+
                 case "chrome-headless":
-                    WebDriverManager.chromedriver().setup();
+                    WebDriverManager.chromedriver()
+                            .driverVersion("LATEST")
+                            .setup();
                     driver = new ChromeDriver(new ChromeOptions().setHeadless(true));
                     break;
+
+
                 case "firefox":
                     WebDriverManager.firefoxdriver().setup();
                     driver = new FirefoxDriver();
                     break;
+
                 case "firefox-headless":
                     WebDriverManager.firefoxdriver().setup();
                     driver = new FirefoxDriver(new FirefoxOptions().setHeadless(true));
@@ -76,7 +87,7 @@ public class Driver {
 
                 case "ie":
                     if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-                        throw new WebDriverException("Your operating system does not support the requested browser");
+                        throw new WebDriverException("Your operating system does not support IE");
                     }
                     WebDriverManager.iedriver().setup();
                     driver = new InternetExplorerDriver();
@@ -84,7 +95,7 @@ public class Driver {
 
                 case "edge":
                     if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-                        throw new WebDriverException("Your operating system does not support the requested browser");
+                        throw new WebDriverException("Your operating system does not support Edge");
                     }
                     WebDriverManager.edgedriver().setup();
                     driver = new EdgeDriver();
@@ -92,11 +103,14 @@ public class Driver {
 
                 case "safari":
                     if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                        throw new WebDriverException("Your operating system does not support the requested browser");
+                        throw new WebDriverException("Your operating system does not support Safari");
                     }
                     WebDriverManager.getInstance(SafariDriver.class).setup();
                     driver = new SafariDriver();
                     break;
+
+                default:
+                    throw new WebDriverException("Browser is not defined properly!");
             }
         }
 
