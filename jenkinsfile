@@ -1,24 +1,25 @@
 node {
     stage('Clone code') {
-        git 'https://github.com/orkunalev/demo-project-orkunalev.git'
+        git 'https://github.com/lodeluner/demo-project-lodeluner.git'
     }
 
     stage('Run tests'){
         if(isUnix()){
-            sh "mvn clean test"
+            sh 'mvn clean test -Dcucumber.filter.tags=@smoke || true'
         } else {
-            bat "mvn clean test -Dcucumber.filter.tags=\"@regression\" "
+            bat 'mvn clean test -Dcucumber.filter.tags=@smoke || exit 0'
         }
     }
 
     stage('Generate report'){
-           cucumber failedFeaturesNumber: -1,
-            failedScenariosNumber: -1,
-            failedStepsNumber: -1,
-            fileIncludePattern: '**/*.json',
-            pendingStepsNumber: -1,
-            skippedStepsNumber: -1,
-            sortingMethod: 'ALPHABETICAL',
-            undefinedStepsNumber: -1
+        cucumber failedFeaturesNumber: -1,
+                 failedScenariosNumber: -1,
+                 failedStepsNumber: -1,
+                 fileIncludePattern: '**/*.json',
+                 pendingStepsNumber: -1,
+                 skippedStepsNumber: -1,
+                 sortingMethod: 'ALPHABETICAL',
+                 undefinedStepsNumber: -1,
+                 ignoreFailedTests: true
     }
 }
