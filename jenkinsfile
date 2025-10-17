@@ -9,7 +9,6 @@ node {
         } else {
             bat "mvn clean test -Dcucumber.filter.tags=\"@regression\" "
         }
-
     }
 
     stage('Generate report'){
